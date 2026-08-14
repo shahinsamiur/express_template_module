@@ -9,7 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import authRoutes from "./modules/auth/authRoutes.js";
 import swaggerSpec from "./config/swagger.js";
 const app: Application = express();
-// app.use(httpLogger);
+app.use(httpLogger);
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,

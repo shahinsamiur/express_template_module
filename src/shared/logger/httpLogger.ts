@@ -23,6 +23,16 @@ const httpLogger = pinoHttp({
   customErrorMessage: (req, res, error) => {
     return `${req.method} ${req.url} - ${res.statusCode} - ${error.message}`;
   },
+
+  serializers: {
+    req: (req) => ({
+      method: req.method,
+      url: req.url,
+    }),
+    res: (res) => ({
+      statusCode: res.statusCode,
+    }),
+  },
 });
 
 export default httpLogger;
