@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import env from "./config/env.js";
 dotenv.config();
 import logger from "./shared/logger/logger.js";
 import app from "./app.js";
@@ -10,7 +11,7 @@ const startServer = async () => {
   try {
     await testDBConnection();
     // await connectDB();
-    app.listen(PORT, () => {
+    app.listen(env.port, () => {
       logger.info(` Server running on port ${PORT}`);
     });
   } catch (err: any) {

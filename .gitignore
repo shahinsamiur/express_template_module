@@ -1,7 +1,7 @@
 node_modules
 # Keep environment variables out of version control
 .env
-
+dist/
 /src/generated/prisma
 temp_auto_push.bat
 temp_interactive_push.bat
