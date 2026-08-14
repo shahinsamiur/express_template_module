@@ -4,24 +4,9 @@ import validate from "../../shared/middleware/validate.js";
 import { registerSchema, loginSchema } from "../auth/authValidators.js";
 import authMiddleware from "../../shared/middleware/authMiddleware.js";
 const router = Router();
-
 router.post("/signup", validate(registerSchema), authController.register);
-
 router.post("/signin", validate(loginSchema), authController.login);
-
-router.post(
-  "/signout",
-  authMiddleware,
-  validate(registerSchema),
-  authController.register,
-);
-
+router.post("/signout", authMiddleware, validate(registerSchema), authController.register);
 // router.post("/signin", validate(loginSchema), authController.login);
-
-router.get(
-  "/me",
-  authMiddleware,
-  validate(registerSchema),
-  authController.register,
-);
+router.get("/me", authMiddleware, validate(registerSchema), authController.register);
 export default router;

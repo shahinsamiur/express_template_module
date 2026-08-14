@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { sql } from "../../config/supabase_db";
-import AppError from "../utils/AppError";
+import { sql } from "../../config/supabase_db.js";
+import AppError from "../utils/AppError.js";
 
 interface DecodedToken extends JwtPayload {
   id: number;
