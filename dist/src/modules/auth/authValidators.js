@@ -1,4 +1,44 @@
 import * as yup from "yup";
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     RegisterRequest:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *         - role
+ *       properties:
+ *         name:
+ *           type: string
+ *           example: John Doe
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: john@example.com
+ *         password:
+ *           type: string
+ *           minLength: 6
+ *           example: secret123
+ *         role:
+ *           type: string
+ *           example: user
+ *     LoginRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: john@example.com
+ *         password:
+ *           type: string
+ *           example: secret123
+ */
 export const registerSchema = yup.object({
     name: yup.string().required("Name is required"),
     email: yup
