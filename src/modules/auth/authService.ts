@@ -14,36 +14,27 @@ export const registerUser = async (
   }
 
   const hashedPassword = await bcrypt.hash(data.password, 10);
-
   const role = data.solver ? "solver" : "user";
-
   const user = await authRepository.createUser({
     name: data.name,
     email: data.email,
     password: hashedPassword,
     role,
   });
-
   const token = generateToken(user.id, user.role);
-
   return { user, token };
 };
 
 export const loginUser = async (data: LoginInput): Promise<AuthResult> => {
   const user = await authRepository.findUserWithPassword(data.email);
-
   if (!user) {
     throw new AppError("Invalid email or password", 401);
   }
-
   const isMatch = await bcrypt.compare(data.password, user.password);
-
   if (!isMatch) {
     throw new AppError("Invalid email or password", 401);
   }
-
   const token = generateToken(user.id, user.role);
-
   return {
     token,
     user: {
