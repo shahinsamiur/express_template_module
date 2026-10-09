@@ -1,0 +1,81 @@
+# Project Structure Planning Prompt
+
+Act as a Senior Software Architect and Business Analyst.
+
+Analyze the client requirements I provide and create a clear project structure plan. Focus only on modules, user roles, permissions, user flows, and frontend pages. Do not define detailed APIs, database schemas, or implementation code.
+
+## 1. Requirement Analysis
+
+* Summarize the project purpose, scope, and core features.
+* Identify unclear requirements and ask me specific questions before making important assumptions.
+* Separate confirmed requirements from assumptions and recommendations.
+
+## 2. Module Breakdown
+
+Identify all required modules, such as Auth, Users, Products, Orders, Invoices, Payments, and Admin.
+
+For each module, define:
+
+* Module name
+* Main responsibility
+* Key features
+* Dependencies on other modules
+
+Include only modules justified by the requirements. Distinguish MVP modules from future enhancements.
+
+## 3. User Roles & Permissions
+
+Identify every user role and define what each role can and cannot do.
+
+Provide a role-permission matrix covering relevant actions such as viewing, creating, updating, deleting, approving, and managing resources.
+
+Include resource ownership restrictions where applicable. Do not assume that every authenticated user has the same permissions.
+
+## 4. User Flows
+
+Describe the main user journeys step by step for each relevant role.
+
+Include registration/login, primary business workflows, important decision points, success outcomes, and failure or alternative paths.
+
+Use a flowchart when it helps clarify a complex workflow.
+
+## 5. Frontend Page List
+
+List all required frontend pages, grouped by area:
+
+* Public pages
+* Authentication pages
+* User/customer pages
+* Admin or staff pages
+* Other role-specific pages
+
+For each page, specify:
+
+* Page name and suggested route
+* Purpose
+* Who can access it
+* Main content and actions
+* Relevant modules
+
+Include loading, empty, error, and access-denied states where applicable. Avoid duplicate pages unless different roles genuinely require different experiences.
+
+## 6. Final Output
+
+Present the plan in this order:
+
+1. Project overview and scope
+2. Core features
+3. Module breakdown
+4. User roles and permission matrix
+5. User flows
+6. Frontend page and route list
+7. Module dependencies
+8. Open questions and decisions requiring approval
+
+Keep the plan practical, organized, and proportional to project complexity. Do not invent requirements or overengineer the architecture.
+
+## Approval Gate
+
+Do not define detailed APIs, database schemas, or business logic specifications in this stage. Do not write code or modify files.
+
+Ask me to review and approve the project structure before proceeding to the separate API & Business Logic Planning stage.

@@ -1,0 +1,31 @@
+## Common Docker Issues & Quick Fixes
+
+* **PostgreSQL Connection Refused:** `localhost` inside Docker points to the container, not the host. Use `host.docker.internal` for host-based PostgreSQL and configure PostgreSQL to accept Docker network connections.
+
+* **Database Authentication Failed:** Verify `DATABASE_URL`, database name, username, password, and PostgreSQL authentication rules.
+
+* **Database Does Not Exist:** Create the database before starting the application, or configure `DATABASE_URL` to use an existing database.
+
+* **Prisma Client or Schema Errors:** Run `npx prisma generate` and verify the Prisma schema and Prisma 7 configuration.
+
+* **Migration Errors:** Ensure PostgreSQL is reachable and the schema is valid; use `npx prisma migrate dev` in development or `npx prisma migrate deploy` in production.
+
+* **Port Already in Use:** Check running containers with `docker ps`; stop the conflicting container or map another host port, e.g. `5001:5000`.
+
+* **Hot Reload Not Working:** Verify the source bind mount (`-v "$PWD:/app"`), the `/app/node_modules` volume, and that the container runs `npm run dev`.
+
+* **Dependency Changes Not Applied:** Rebuild the Docker image and recreate the container after changing `package.json` or dependencies.
+
+* **Environment Variables Missing:** Pass `--env-file .env` when running the container and verify that required variables are defined.
+
+* **Container Exits or Crashes:** Run `docker logs --tail 100 express-api-dev` to inspect startup errors and stack traces.
+
+* **Express 5 Middleware Compatibility:** Some older Express 4 middleware may fail under Express 5. Check compatibility and upgrade to a compatible version.
+
+* **XSS Middleware Error (`req.query` is read-only):** Use an Express 5-compatible version of `express-xss-sanitizer`; older versions may attempt to assign to the read-only `req.query` property.
+
+* **Docker Build Fails:** Check the Dockerfile, `.dockerignore`, lockfile, and dependency installation output; rebuild after fixing the underlying error.
+
+* **Container Cannot Reach Host Services:** On Linux, add `--add-host=host.docker.internal:host-gateway` and verify host firewall and service binding settings.
+
+* **Production Secrets Exposed:** Never commit `.env` or bake secrets into the image. Supply production secrets securely at runtime.
