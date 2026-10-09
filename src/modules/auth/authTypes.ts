@@ -1,7 +1,7 @@
 export type UserRole = "user" | "solver";
 
 export interface AuthUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: UserRole;

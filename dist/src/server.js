@@ -8,6 +8,7 @@ const database = createDatabase(env.databaseProvider);
 async function startServer() {
     try {
         await database.connect();
+        logger.info({ provider: env.databaseProvider }, "Database connected successfully");
         app.listen(env.port, () => {
             logger.info(`Server running on port ${env.port}`);
         });

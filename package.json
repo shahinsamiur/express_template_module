@@ -4,8 +4,8 @@
   "description": "",
   "main": "./src/server.ts",
   "scripts": {
-    "start": "node api.js && node dist/server.js",
-    "build": "node api.js && tsc",
+    "start": "node dist/src/server.js",
+    "build": "prisma generate && tsc",
     "dev": "nodemon --exec tsx -r dotenv/config src/server.ts"
   },
   "keywords": [],
