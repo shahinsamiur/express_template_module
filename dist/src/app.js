@@ -3,12 +3,13 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { xss } from "express-xss-sanitizer";
+import httpLogger from "./shared/logger/httpLogger.js";
 import errorHandler from "./shared/errors/errorHandler.js";
 import swaggerUi from "swagger-ui-express";
 import authRoutes from "./modules/auth/authRoutes.js";
 import swaggerSpec from "./config/swagger.js";
 const app = express();
-// app.use(httpLogger);
+app.use(httpLogger);
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,

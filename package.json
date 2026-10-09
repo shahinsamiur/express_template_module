@@ -6,15 +6,15 @@
   "scripts": {
     "start": "node api.js && node dist/server.js",
     "build": "node api.js && tsc",
-    "dev": "node api.js && nodemon --exec tsx -r dotenv/config src/server.ts"
+    "dev": "nodemon --exec tsx -r dotenv/config src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
     "@supabase/supabase-js": "^2.93.3",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",

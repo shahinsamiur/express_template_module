@@ -1,20 +1,26 @@
-import dotenv from "dotenv";
-dotenv.config();
-import logger from "./shared/logger/logger.js";
+import "dotenv/config";
+import env from "./config/env.js";
 import app from "./app.js";
-// import { testDBConnection } from "./config/supabase_db";
-// import connectDB from "./config/mongodb_db";
-const PORT = process.env.PORT || 5000;
-const startServer = async () => {
+import logger from "./shared/logger/logger.js";
+import "./config/database/database.registry.js";
+import { createDatabase } from "./config/database/database.factory.js";
+const database = createDatabase(env.databaseProvider);
+async function startServer() {
     try {
-        // await testDBConnection();
-        // await connectDB();
-        app.listen(PORT, () => {
-            logger.info(` Server running on port ${PORT}`);
+        await database.connect();
+        app.listen(env.port, () => {
+            logger.info(`Server running on port ${env.port}`);
         });
     }
-    catch (err) {
-        logger.error("Failed to start server:", err);
+    catch (error) {
+        logger.error({ err: error }, "Failed to start server");
+        try {
+            await database.disconnect();
+        }
+        catch (cleanupError) {
+            logger.error({ err: cleanupError }, "Database cleanup failed");
+        }
+        process.exitCode = 1;
     }
-};
+}
 startServer();

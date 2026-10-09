@@ -1,5 +1,6 @@
-import { sql } from "../../config/supabase_db.js";
-import {
+
+import { db } from "../../config/database/index.js";
+import type {
   AuthUser,
   AuthUserWithPassword,
   CreateUserInput,
@@ -8,38 +9,47 @@ import {
 export const findUserByEmail = async (
   email: string,
 ): Promise<AuthUser | null> => {
-  const users = await sql<AuthUser[]>`
-    SELECT id, name, email, role
-    FROM users
-    WHERE email = ${email}
-  `;
+  const user = await db.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
+  });
 
-  return users[0] ?? null;
+  return user;
 };
 
 export const findUserWithPassword = async (
   email: string,
 ): Promise<AuthUserWithPassword | null> => {
-  const users = await sql<AuthUserWithPassword[]>`
-    SELECT id, name, email, password, role
-    FROM users
-    WHERE email = ${email}
-  `;
+  const user = await db.user.findUnique({
+    where: { email },
+  });
 
-  return users[0] ?? null;
+  return user;
 };
 
-export const createUser = async (data: CreateUserInput): Promise<AuthUser> => {
-  const users = await sql<AuthUser[]>`
-    INSERT INTO users (name, email, password, role)
-    VALUES (
-      ${data.name},
-      ${data.email},
-      ${data.password},
-      ${data.role}
-    )
-    RETURNING id, name, email, role
-  `;
+export const createUser = async (
+  data: CreateUserInput,
+): Promise<AuthUser> => {
+  const user = await db.user.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
+  });
 
-  return users[0];
+  return user;
 };
+

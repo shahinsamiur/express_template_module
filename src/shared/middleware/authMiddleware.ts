@@ -1,15 +1,15 @@
-import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { sql } from "../../config/supabase_db.js";
+import type { Request, Response, NextFunction } from "express";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import { db } from "../../config/database/index.js";
 import AppError from "../utils/AppError.js";
 
 interface DecodedToken extends JwtPayload {
-  id: number;
+  id: string;
 }
 
 const authMiddleware = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ): Promise<void> => {
   const authHeader = req.headers.authorization;
@@ -18,7 +18,11 @@ const authMiddleware = async (
     return next(new AppError("Unauthorized, token missing", 401));
   }
 
-  const token: string = authHeader.split(" ")[1];
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    return next(new AppError("Unauthorized, token missing", 401));
+  }
 
   try {
     const decoded = jwt.verify(
@@ -26,17 +30,28 @@ const authMiddleware = async (
       process.env.JWT_SECRET as string,
     ) as DecodedToken;
 
-    const users =
-      await sql`SELECT id, name, email, role FROM users WHERE id = ${decoded.id}`;
+    if (typeof decoded.id !== "string") {
+      return next(new AppError("Invalid or expired token", 401));
+    }
 
-    if (users.length === 0) {
+    const user = await db.user.findUnique({
+      where: { id: decoded.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
       return next(new AppError("User not found", 404));
     }
 
-    (req as any).user = users[0];
+    (req as Request & { user: typeof user }).user = user;
 
-    next();
-  } catch (err) {
+    return next();
+  } catch {
     return next(new AppError("Invalid or expired token", 401));
   }
 };
