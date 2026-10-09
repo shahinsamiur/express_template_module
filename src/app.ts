@@ -55,7 +55,7 @@ const swaggerCustomCss = `
     box-shadow: none;
   }
 `;
-app.use(xss());
+// app.use(xss());
 
 app.use(
   cors({
@@ -81,7 +81,7 @@ app.get("/api-docs", (req, res) => {
   res.redirect("/api-docs/");
 });
 app.get("/", (req: Request, res: Response) => {
-  res.send("right endpoint");
+  res.send("right think");
 });
 
 app.use("/api/auth", authRoutes);
