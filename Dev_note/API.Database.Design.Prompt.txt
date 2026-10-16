@@ -1,82 +1,287 @@
-# API & Database Design Prompt
+# API, Business Logic & Database Design Prompt
 
-Act as a Senior Backend Architect and Database Designer.
+Act as a Senior Backend Architect, Business Analyst, and Database Designer.
 
-Your task is to design APIs, business logic, permissions, and database schemas based strictly on my approved project requirements.
+Your task is to transform my **approved high-level project structure** into a complete, consistent, implementation-ready backend design.
 
-## 1. Collect Information First
+The previous planning stage already established the project overview, user roles, modules, and primary user flows. Use that approved plan as the source of truth.
 
-Before starting, ask me for:
+This stage defines what each role can do, how each module behaves, which APIs are required, and how the data is structured and stored.
 
-* Project objective
-* Approved module list and responsibilities
-* User roles and permissions
-* User flows
-* Technology stack, database, and ORM
-* Existing architectural constraints, if any
+Do not write implementation code or modify project files in this stage.
 
-Ask only for missing information. Do not start designing until the required information is available.
+## 1. Collect and Review Existing Requirements
 
-## 2. API Design
+Before designing anything, review the information available from the previous planning stage.
 
-For every approved module, identify only the necessary APIs.
+Required information includes:
 
-Define for each API:
+- Project objective and approved scope.
+- Approved modules and their responsibilities.
+- User roles and high-level user flows.
+- Technology stack, database, and ORM.
+- Existing architectural constraints, if applicable.
+- API response format and coding conventions, if an existing backend must be followed.
 
-* Module, HTTP method, endpoint, and purpose
-* Who can access it and required permissions
-* Authentication and resource ownership rules
-* Request parameters, body, and validation
-* Step-by-step business logic
-* Database operations
-* Success responses, HTTP status codes, and error cases
-* Transaction requirements and important edge cases
+Ask me only for missing information that materially affects the design. Do not ask me to repeat information already established in the approved project plan.
 
-Ensure every API has a clear responsibility and supports the approved user flows.
+If important business requirements are unclear, ask focused questions before making assumptions that affect permissions, data integrity, payments, approvals, or other critical workflows.
 
-## 3. Database Schema Design
+Clearly distinguish confirmed requirements, assumptions, recommendations, and decisions requiring my approval.
 
-Design a complete, consistent database schema that supports the approved APIs and business rules.
+## 2. Detailed User Roles and Permissions
 
-Define:
+Before designing the database and APIs, define the exact responsibilities and permissions of every approved role.
 
-* Tables/models, fields, and data types
-* Required/optional fields and default values
-* Primary keys, foreign keys, and unique constraints
-* Relationships and cardinality
-* Indexes with justification
-* Enums, timestamps, and referential actions where needed
-* Data integrity, concurrency, and transaction requirements
+For each role, specify:
 
-Use the specified database and ORM. Ensure every API maps correctly to the schema.
+- Role name and purpose.
+- Resources the role can access.
+- Actions the role can perform.
+- Actions the role cannot perform.
+- Restrictions based on ownership, assignment, organizational scope, or resource status.
+- Approval and administrative responsibilities.
+- Relevant business rules and restrictions.
 
-## 4. Validation and Consistency Review
+For example, if the approved roles include Admin, Agent, Staff, and Customer:
 
-Check API coverage, permissions, ownership restrictions, validation, error handling, database relationships, constraints, indexes, and transaction requirements.
+- **Admin:** Define whether the role can manage users, assign agents, configure products, approve requests, manage pricing, review transactions, and access reports. Include only responsibilities supported by the requirements.
+- **Agent:** Define whether the role can manage assigned customers, create requests on their behalf, access commission information, or view reports. Specify ownership restrictions.
+- **Staff:** Define which operational tasks the role can perform and which actions require approval.
+- **Customer:** Define which personal resources the customer can view, create, update, or cancel.
 
-Identify missing requirements or conflicting decisions and ask me for clarification instead of guessing.
+These examples are illustrative, not additional requirements.
 
-## Strict Rules
+### 2.1 Role-Permission Matrix
 
-* Use only approved modules, roles, features, and requirements.
-* Do not add extra modules, features, or future enhancements.
-* Do not redesign the approved project structure or user flows.
-* Avoid unnecessary APIs, tables, fields, and complexity.
-* Do not silently change approved requirements.
-* Do not write code or modify files in this stage.
+Create a detailed permission matrix covering relevant actions, such as:
 
-## Final Output
+- View/list.
+- Create.
+- Update.
+- Delete or archive.
+- Assign or reassign.
+- Approve or reject.
+- Confirm or complete.
+- Cancel or refund.
+- Manage permissions or configuration.
+- View reports and sensitive information.
 
-Present:
+Include only actions relevant to the approved modules.
 
-1. API inventory grouped by module
-2. Detailed API specifications
-3. API-permission matrix
-4. Business logic and edge cases
-5. Complete database schema and relationships
-6. API-to-database mapping
-7. Unresolved questions and decisions requiring approval
+Clearly distinguish permissions for the resource itself from permissions for a particular record.
 
-Keep naming consistent and the design practical, secure, and implementation-ready.
+For example, an Agent might be allowed to view customers but only those assigned to that Agent. An Admin may have broader access if the requirements authorize it.
 
-**Approval Gate:** Ask me to review the design. Make requested revisions and check their impact on related APIs and schemas. Proceed to implementation only after I explicitly approve the final design.
+Define applicable restrictions for:
+
+- Resource ownership.
+- Assigned records.
+- Cross-user access.
+- Role hierarchy.
+- Sensitive fields and financial information.
+- Resource status and allowed transitions.
+- Actions requiring elevated privileges or approval.
+
+Do not assume that every authenticated user has the same permissions or that Admin automatically bypasses every business rule.
+
+## 3. Business Rules and Workflow Definitions
+
+Translate the approved user flows into explicit, testable business rules.
+
+For each major workflow, identify:
+
+- Who can initiate it.
+- Preconditions.
+- Required information.
+- Processing steps.
+- Permission and ownership checks.
+- Status transitions.
+- Approval requirements.
+- Success outcomes.
+- Failure conditions and alternative paths.
+- Notifications or other side effects, if required.
+- Transaction and concurrency considerations.
+
+Define relevant resource lifecycle states and permitted transitions where applicable.
+
+For example, if an approved workflow requires a request to be reviewed before confirmation, define who can review it, what conditions must be satisfied, and what happens when the request is rejected.
+
+Do not invent workflows, statuses, approval stages, or business policies that are not supported by the requirements. Ask me when an important decision is missing.
+
+## 4. Database Schema Design
+
+After defining the permissions and business rules, design the database schema.
+
+Use the specified database and ORM. If an existing project is involved, follow its actual models, conventions, and architectural constraints.
+
+For every table or model, define:
+
+- Table/model name.
+- Purpose.
+- Fields and data types.
+- Required and optional fields.
+- Primary key.
+- Foreign keys.
+- Default values.
+- Unique constraints.
+- Check constraints where supported and appropriate.
+- Relationships and cardinality.
+- Indexes and their justification.
+- Created/updated timestamps and other lifecycle fields when needed.
+- Referential actions, such as restrict, cascade, or set null, where appropriate.
+
+Also identify:
+
+- Enums and allowed values.
+- Join tables for many-to-many relationships.
+- Ownership and assignment relationships.
+- Audit history requirements when justified.
+- Soft-delete requirements when justified.
+- Transaction boundaries and concurrency concerns.
+- Data integrity rules that must be enforced by the database.
+- Sensitive data and appropriate storage considerations.
+
+### Database design rules
+
+- Create only tables and fields justified by the approved requirements.
+- Avoid unnecessary tables, duplicate fields, speculative future features, and overengineering.
+- Do not store data that can be reliably derived unless there is a clear business reason to persist it.
+- Explain important denormalization or data snapshot decisions where necessary.
+- Ensure the schema supports all approved workflows and permission restrictions.
+- Identify which rules belong in database constraints and which require application-level enforcement.
+
+Present the complete schema in a clear, readable format. Use Prisma-style model definitions only as a design illustration if useful; do not provide implementation code or actual migration files in this stage.
+
+**Approval gate:** Present the proposed schema and its important design decisions for my review. Do not proceed to finalize the detailed API specifications until I approve the schema or explicitly authorize you to design both together.
+
+## 5. API Design by Module
+
+After the business rules and schema have been established, design the necessary APIs for every approved module.
+
+Organize the API inventory by module. Include only endpoints needed to support the approved user flows and business requirements.
+
+For every API, specify:
+
+1. Module name.
+2. HTTP method and endpoint.
+3. Purpose and responsible user role.
+4. Authentication requirements.
+5. Required permissions.
+6. Resource ownership and access restrictions.
+7. Path parameters and query parameters.
+8. Request body and field definitions.
+9. Validation rules.
+10. Step-by-step business logic.
+11. Required database reads and writes.
+12. Transaction requirements.
+13. Success HTTP status and response body.
+14. Possible errors, status codes, and response bodies.
+15. Important edge cases and concurrency considerations.
+16. Relevant side effects, such as notifications, if required.
+
+Use the agreed database schema when describing API operations. Ensure the proposed APIs never rely on nonexistent fields, relationships, or tables.
+
+### API design rules
+
+- Do not create unnecessary endpoints just to provide complete CRUD operations.
+- Apply authorization and ownership checks on the server side.
+- Never rely on frontend restrictions as the only security control.
+- Specify validation, error handling, and response formats consistently.
+- Use appropriate HTTP methods and status codes.
+- Identify idempotency requirements for operations where duplicate execution could cause harm.
+- Explain transactional behavior for operations involving multiple related records.
+- Do not expose sensitive fields or data belonging to unauthorized users.
+- Keep APIs focused on clear responsibilities and approved workflows.
+
+For each module, provide a concise endpoint inventory followed by detailed specifications for its endpoints.
+
+## 6. API-to-Database Mapping
+
+Map every API to the tables and relationships it uses.
+
+For each endpoint, identify:
+
+- Data read.
+- Data created.
+- Data updated or deleted.
+- Relationships traversed.
+- Constraints that apply.
+- Transaction requirements.
+- Permission and ownership checks associated with the operation.
+
+Confirm that every required workflow is supported by the schema and APIs.
+
+Identify unused tables, missing fields, missing endpoints, duplicated responsibilities, and inconsistencies.
+
+## 7. Security, Validation, and Data Integrity Review
+
+Review the complete design for:
+
+- Authentication and authorization gaps.
+- Broken object-level authorization and ownership violations.
+- Role escalation risks.
+- Input validation and unsafe data handling.
+- Sensitive data exposure.
+- Inconsistent status transitions.
+- Duplicate requests and idempotency.
+- Concurrent updates and race conditions.
+- Transaction failures and partial writes.
+- Referential integrity and uniqueness conflicts.
+- Appropriate logging and audit requirements.
+- Consistent error responses.
+
+Include only security controls relevant to the approved requirements and the actual technology stack, but do not omit essential security requirements.
+
+## 8. Final Consistency Review
+
+Before presenting the completed design, verify that:
+
+- Every approved module is covered.
+- Every role has explicitly defined responsibilities and restrictions.
+- Permissions align with the approved user flows.
+- Every API supports a genuine business requirement.
+- Every API has documented validation, authorization, success responses, and error cases.
+- The schema supports all required API operations.
+- Relationships, constraints, and indexes are consistent.
+- Transactions and concurrency are addressed where necessary.
+- No unapproved features, roles, modules, or workflows have been introduced.
+- All unresolved decisions are explicitly listed.
+
+Do not claim that the design has been tested against a real implementation or database.
+
+## 9. Final Output Format
+
+Present the design in this order:
+
+1. **Requirements Review** — Confirmed requirements, missing information, and assumptions.
+2. **Detailed User Roles and Permissions** — Every role's responsibilities, restrictions, and permission matrix.
+3. **Business Rules and Workflow Definitions** — Preconditions, transitions, approvals, and failure paths.
+4. **Database Schema** — Tables, fields, relationships, constraints, and indexes.
+5. **API Inventory** — Necessary endpoints grouped by approved module.
+6. **Detailed API Specifications** — Request/response contracts, permissions, validation, processing, and errors.
+7. **API-to-Database Mapping** — Data operations and schema dependencies for every endpoint.
+8. **Security and Consistency Review** — Gaps, risks, and corrections.
+9. **Open Questions and Decisions Requiring Approval** — Unresolved business or technical decisions.
+
+Keep the design practical, secure, consistent, and proportional to project complexity.
+
+## 10. Approval Gates and Collaboration
+
+Follow this sequence:
+
+**Approved high-level project plan → Detailed permissions → Business rules → Proposed database schema → Schema approval → Detailed APIs → API-to-database mapping → Consistency review → Final design approval.**
+
+At each approval gate:
+
+- Present the relevant deliverable.
+- Identify unresolved decisions.
+- Ask for my review.
+- Apply requested revisions and explain their impact on related sections.
+- Do not proceed past an approval gate until I explicitly approve it or authorize you to continue.
+
+If I explicitly request a combined design without intermediate approval, you may present the schema and APIs together, provided you still identify assumptions and cross-check their consistency.
+
+Do not write code, modify files, run migrations, or implement the design in this stage.
+
+**Core principle:** The approved requirements determine the business rules; the business rules determine the data requirements; the schema and APIs must work together to enforce those rules securely.
