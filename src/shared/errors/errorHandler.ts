@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import sendResponse from "../utils/response.js";
 
 interface CustomError extends Error {
@@ -9,7 +9,6 @@ const errorHandler = (
   err: CustomError,
   req: Request,
   res: Response,
-  next: NextFunction,
 ): void => {
   const statusCode: number = err.statusCode || 500;
   const message: string = err.message || "Internal Server Error";

@@ -1,0 +1,157 @@
+# CI/CD Development Rules
+
+## Objective
+
+Maintain and deploy this Express + TypeScript backend using GitHub Actions, Docker, and a VPS.
+
+Docker is the default deployment method. Do not add PM2 unless explicitly requested.
+
+## 1. Existing Workflows
+
+- `ci.yml`: Runs typecheck, lint, tests, and build. Do not modify unless necessary.
+- `pr-checks.yml`: Validates PR titles.
+- `cd.yml`: Deploys the application to VPS using Docker.
+
+## 2. Expected Deployment Flow
+
+```text
+Pull Request
+    ↓
+CI + PR Checks
+    ↓
+Both Pass
+    ↓
+Merge into main
+    ↓
+CI Runs Again
+    ↓
+CI Successful
+    ↓
+CD Starts
+    ↓
+SSH into VPS
+    ↓
+Fetch Tested Commit
+    ↓
+Build Docker Image
+    ↓
+Recreate and Start Containers
+    ↓
+Verify Deployment
+```
+
+## 3. AI Execution Instructions
+
+Before making changes:
+
+1. Inspect existing workflows, Dockerfiles, Compose files, package.json, and environment configuration.
+2. Identify missing configurations and actual problems.
+3. Explain the required changes before implementation.
+4. Preserve working CI configuration.
+5. Modify CD only when necessary.
+6. Avoid unnecessary dependencies and architectural changes.
+7. Verify every change before declaring success.
+
+## 4. GitHub Configuration
+
+Navigate to:
+
+Repository → Settings → Secrets and variables → Actions.
+
+Configure these secrets:
+
+| Secret | Purpose |
+|---|---|
+| `SSH_HOST` | VPS public IP |
+| `SSH_USER` | VPS username |
+| `SSH_PRIVATE_KEY` | Deployment SSH private key |
+| `SSH_PORT` | SSH port, usually 22 |
+
+Configure this variable:
+
+| Variable | Purpose |
+|---|---|
+| `DEPLOY_PATH` | Application directory on VPS |
+
+Create the `production` GitHub Environment if required by CD.
+
+Never expose or commit credentials.
+
+## 5. VPS Setup
+
+The AI must inspect the VPS before making changes.
+
+Verify:
+
+- Operating system
+- Docker Engine
+- Docker Compose
+- Git
+- SSH access
+- Available disk space
+- Existing application services
+
+Install missing dependencies only when necessary.
+
+Enable Docker at startup:
+
+```bash
+sudo systemctl enable --now docker
+```
+
+Configure secure SSH access for GitHub Actions and repository access for the VPS.
+
+## 6. Docker Production Setup
+
+Inspect existing Docker configuration before creating or modifying production files.
+
+Create `docker-compose.prod.yml` if needed.
+
+Ensure:
+
+- Production image builds correctly.
+- Prisma Client is generated when required.
+- Environment variables are securely managed.
+- Application starts using the correct command.
+- Containers restart automatically.
+- Health checks are configured when possible.
+
+Never overwrite production environment files.
+
+## 7. Deployment Requirements
+
+CD must:
+
+1. Run only after successful CI.
+2. Deploy the exact commit tested by CI.
+3. Connect to VPS through SSH.
+4. Fetch and update application code.
+5. Rebuild Docker images.
+6. Recreate containers when necessary.
+7. Start containers in detached mode.
+8. Verify container and application health.
+
+Use Docker Compose rather than manually managing containers.
+
+## 8. Verification and Safety
+
+Before completing deployment:
+
+- Validate workflow YAML.
+- Verify Docker Compose configuration.
+- Build the production image.
+- Verify container status.
+- Verify application health.
+- Report deployment errors clearly.
+
+Do not claim success without verification.
+
+Avoid destructive commands, unnecessary restarts, and changes to existing production data.
+
+## 9. Working Method
+
+Always follow:
+
+**Inspect → Identify → Plan → Implement → Verify**
+
+Make the smallest necessary changes and explain each important decision.

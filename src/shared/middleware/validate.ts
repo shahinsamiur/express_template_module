@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AnySchema } from "yup";
+import { AnySchema, ValidationError } from "yup";
 import AppError from "../utils/AppError.js";
 
 const validate =
@@ -12,9 +12,14 @@ const validate =
       });
 
       next();
-    } catch (error: any) {
-      const message: string = error.errors.join(", ");
-      next(new AppError(message, 400));
+    } catch (error: unknown) {
+      if (error instanceof ValidationError) {
+        const message = error.errors.join(", ");
+        next(new AppError(message, 400));
+        return;
+      }
+
+      next(error);
     }
   };
 

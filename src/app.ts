@@ -2,7 +2,6 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { xss } from "express-xss-sanitizer";
 import httpLogger from "./shared/logger/httpLogger.js";
 import errorHandler from "./shared/errors/errorHandler.js";
 import swaggerUi from "swagger-ui-express";

@@ -1,0 +1,80 @@
+
+name: CD
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_repository.full_name == github.repository
+      )
+
+    environment: production
+
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          envs: DEPLOY_PATH,DEPLOY_SHA
+
+          script: |
+            set -e
+
+            if [ -z "$DEPLOY_PATH" ]; then
+              echo "DEPLOY_PATH is missing"
+              exit 1
+            fi
+
+            cd "$DEPLOY_PATH"
+
+            echo "Fetching deployment commit..."
+            git fetch origin "$DEPLOY_SHA"
+            git reset --hard "$DEPLOY_SHA"
+
+            echo "Deploying with Docker..."
+
+            if [ ! -f docker-compose.prod.yml ]; then
+              echo "docker-compose.prod.yml not found"
+              exit 1
+            fi
+
+            docker compose \
+              -f docker-compose.prod.yml \
+              up -d --build --remove-orphans
+
+            docker compose \
+              -f docker-compose.prod.yml \
+              ps
+
+            echo "Docker deployment completed!"

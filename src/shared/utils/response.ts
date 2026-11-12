@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-const sendResponse = <T = any>(
+const sendResponse = <T = unknown>(
   res: Response,
   status: number,
   success: boolean,
